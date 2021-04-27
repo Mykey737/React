@@ -1,6 +1,6 @@
-import { PARTENERS } from "./shared/partners";
+import { PARTNERS } from "../shared/partners";
 
-export const Partners = (state = PARTENRS, action) => {
+export const Partners = (state = PARTNERS, action) => {
   switch (action.type) {
     default:
       return state;
