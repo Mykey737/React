@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Label, Col,
   Row } from "reactstrap";
-import { Control, LocalForm } from 'react-redux-form';
+import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Link } from "react-router-dom";
+
+const required = val => val && val.length;
+const maxLength = len => val => !val || (val.length <= len);
+const minLength = len => val => val && (val.length >= len);
 
 function RenderCampsite({ campsite }) {
   return (
@@ -63,13 +67,25 @@ class CommentForm extends Component {
                 <Control.select md={12} 
                   model=".rating"
                   name="rating"
-                  clasName="form-control">
+                  clasName="form-control"
+                  validators={{ 
+                    required,
+                  }}>
                   <option>1</option>
                   <option>2</option>
                   <option>3</option>
                   <option>4</option>
                   <option>5</option>
                 </Control.select>
+                <Errors 
+                    className="text-danger"
+                    model=".rating"
+                    show="touched"
+                    component="div"
+                    messages={{
+                      required: 'Required',
+                    }}
+                  />
               </div>
               <div className="form-group">
                 <Label htmlFor="author">
@@ -81,6 +97,22 @@ class CommentForm extends Component {
                     name="author"
                     placeholder="Your Name"
                     className="form-control"
+                    validators={{ 
+                      required,
+                      minLength: minLength(2),
+                      maxLength: maxLength(15)
+                    }}
+                  />
+                  <Errors 
+                    className="text-danger"
+                    model=".author"
+                    show="touched"
+                    component="div"
+                    messages={{
+                      required: 'Required',
+                      minLength: 'Must be  at least 2 characters',
+                      maxLength: 'Must be 15 characters of less'
+                    }}
                   />
               </div>
               <div className="form-group">
