@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Input, Label } from "reactstrap";
+import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Label, Col,
+  Row } from "reactstrap";
+import { Control, LocalForm } from 'react-redux-form';
 import { Link } from "react-router-dom";
 
 function RenderCampsite({ campsite }) {
@@ -20,7 +22,10 @@ class CommentForm extends Component {
     super(props);
 
     this.state = {
-      isModalOpen: false
+      isModalOpen: false,
+      rating: '1',
+      author: '',
+      text: '',
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -34,10 +39,9 @@ class CommentForm extends Component {
     });
   }
 
-  handleComment(event) {
-    alert(`Username: ${this.username.value}, Password: ${this.password.value}, Remember Me: ${this.remember.checked}`);
-    this.toggleModal();
-    event.preventDefault();
+  handleComment(values) {
+    console.log("Current state is:" + JSON.stringify(values));
+    alert("Current state is:" + JSON.stringify(values));
   }
 
   render() {
@@ -51,25 +55,48 @@ class CommentForm extends Component {
         </span>
 
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
-          <ModalHeader toggle={this.toggleModal}></ModalHeader>
+          <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
           <ModalBody>
-            <Form onSubmit={this.handleLogin}>
-              <FormGroup>
-                <Label htmlFor="username">Username</Label>
-                <Input type="text" id="username" name="username" innerRef={input =>this.username = input} />
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="password">Password</Label>
-                <Input type="password" id="password" name="password" innerRef={input =>this.password = input} />
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                <Input type="checkbox" name="remember" innerRef={input => this.remember = input} />
-                Remember me
+            <LocalForm onSubmit={this.handleComment}>
+              <div className="form-group">
+                <Label htmlFor="rating" className="mr-2">Rating</Label>
+                <Control.select md={12} 
+                  model=".rating"
+                  name="rating"
+                  clasName="form-control">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </Control.select>
+              </div>
+              <div className="form-group">
+                <Label htmlFor="author">
+                  Your Name
                 </Label>
-              </FormGroup>
-              <Button type="submit" value="submit" color="primary">Login</Button>
-            </Form>
+                  <Control.text
+                    model=".author"
+                    id="author"
+                    name="author"
+                    placeholder="Your Name"
+                    className="form-control"
+                  />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="comment">
+                  Comment
+                </Label>
+                  <Control.textarea
+                    model=".comment"
+                    id="comment"
+                    name="comment"
+                    rows="6"
+                    className="form-control"
+                  />
+              </div>
+              <Button type="submit" value="submit" color="primary">Submit Comment</Button>
+            </LocalForm>
           </ModalBody>
         </Modal>
       </React.Fragment>
