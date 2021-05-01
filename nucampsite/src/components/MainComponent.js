@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { actions } from "react-redux-form";
 import Directory from "./DirectoryComponent";
 import CampsiteInfo from "./CampsiteInfoComponent";
 import Header from "./HeaderComponent";
@@ -9,13 +8,16 @@ import Contact from "./ContactComponent";
 import About from "./AboutComponent";
 import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import { actions } from "react-redux-form";
 import {
   postComment,
+  postFeedback,
   fetchCampsites,
   fetchComments,
   fetchPromotions,
+  fetchPartners,
 } from "../redux/ActionCreators";
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 const mapStateToProps = (state) => {
   return {
@@ -29,10 +31,12 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   postComment: (campsiteId, rating, author, text) =>
     postComment(campsiteId, rating, author, text),
+  postFeedback: (feedback) => postFeedback (feedback),
   fetchCampsites: () => fetchCampsites(),
   resetFeedbackForm: () => actions.reset("feedbackForm"),
   fetchComments: () => fetchComments(),
   fetchPromotions: () => fetchPromotions(),
+  fetchPartners: () => fetchPartners(),
 };
 
 class Main extends Component {
@@ -40,6 +44,7 @@ class Main extends Component {
     this.props.fetchCampsites();
     this.props.fetchComments();
     this.props.fetchPromotions();
+    this.props.fetchPartners();
   }
 
   render() {
@@ -59,8 +64,14 @@ class Main extends Component {
             )[0]
           }
           promotionLoading={this.props.promotions.isLoading}
-          promotionsErrMess={this.props.promotions.errMess}
-          partner={this.props.partners.filter((partner) => partner.featured)[0]}
+          promotionErrMess={this.props.promotions.errMess}
+          partner={
+            this.props.partners.partners.filter(
+              (partner) => partner.featured
+            )[0]
+          }
+          partnerLoading={this.props.partners.isLoading}
+          partnerErrMess={this.props.partners.errMess}
         />
       );
     };
@@ -78,6 +89,7 @@ class Main extends Component {
           comments={this.props.comments.comments.filter(
             (comment) => comment.campsiteId === +match.params.campsiteId
           )}
+          commentsErrMess={this.props.comments.errMess}
           postComment={this.props.postComment}
         />
       );
@@ -87,7 +99,11 @@ class Main extends Component {
       <div>
         <Header />
         <TransitionGroup>
-          <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+          <CSSTransition
+            key={this.props.location.key}
+            classNames="page"
+            timeout={300}
+          >
             <Switch>
               <Route path="/home" component={HomePage} />
               <Route
@@ -95,16 +111,12 @@ class Main extends Component {
                 path="/directory"
                 render={() => <Directory campsites={this.props.campsites} />}
               />
-              <Route
-                exact
-                path="/directory/:campsiteId"
-                component={CampsiteWithId}
-              />
+              <Route path="/directory/:campsiteId" component={CampsiteWithId} />
               <Route
                 exact
                 path="/contactus"
                 render={() => (
-                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} />
+                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback} />
                 )}
               />
               <Route
@@ -115,7 +127,7 @@ class Main extends Component {
               <Redirect to="/home" />
             </Switch>
           </CSSTransition>
-        </TransitionGroup>      
+        </TransitionGroup>
         <Footer />
       </div>
     );
